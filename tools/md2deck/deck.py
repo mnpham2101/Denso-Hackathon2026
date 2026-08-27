@@ -352,10 +352,15 @@ def render_divider_slide(
             '<section class="slide divider divider-photo" '
             f'style="background-image: linear-gradient(rgba(16,23,63,.45), rgba(16,23,63,.65)), url(\'{bg}\')">'
         )
+        # A photo divider reads as a cover/closing title card, not a
+        # numbered chapter break — the giant sec-num is reserved for the
+        # numbered divider-light sections instead.
+        sec_num_html = ""
     else:
         open_tag = '<section class="slide divider divider-light">'
+        sec_num_html = f'<div class="sec-num">{section_num}</div>'
     return (
-        f'{open_tag}<div class="sec-num">{section_num}</div>{eyebrow_html}<h1>{title_html}</h1>'
+        f'{open_tag}{sec_num_html}{eyebrow_html}<h1>{title_html}</h1>'
         f'<div class="rule"></div>{subtitle_html}{_accents_html()}</section>'
     )
 

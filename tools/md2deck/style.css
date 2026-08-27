@@ -4,7 +4,8 @@
   blue/teal accent palette, rounded card tables, skewed bullet markers).
 
   Colors live in :root as CSS variables — copy this file and edit the
-  --accent-*/--navy-deep/--ink values to retheme a deck.
+  --accent-1 through --accent-4, --navy-deep, and --ink values to retheme
+  a deck.
 */
 :root {
   --accent-1: #F37021; /* orange  */
@@ -50,7 +51,8 @@ html, body { height: 100%; background: #14183a; font-family: "Segoe UI", "Segoe 
    requested to match the reference deck's title styling. */
 .divider { background-size: cover; background-position: center; justify-content: center; padding: 0 110px; }
 .divider .sec-num { font-size: 120px; font-weight: 700; color: var(--accent-1); line-height: 1; opacity: .95; }
-.divider .eyebrow { font-size: 15px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--accent-1); margin-top: 18px; }
+.divider .eyebrow { font-size: 18px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: var(--accent-1); margin-top: 0; }
+.divider .sec-num + .eyebrow { margin-top: 18px; }
 .divider h1 { font-size: 56px; font-weight: 700; margin-top: 10px; max-width: 900px; }
 .divider .rule { width: 110px; height: 6px; background: var(--accent-1); border-radius: 3px; margin-top: 26px; }
 .divider .divider-sub { font-size: 20px; max-width: 760px; margin-top: 16px; line-height: 1.45; }
