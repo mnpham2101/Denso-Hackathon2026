@@ -65,6 +65,16 @@ Các nhóm tính năng, và mức độ phù hợp của đề xuất với ERM 
 - Phát triển song song rút ngắn thời gian bàn giao dù số lượng tính năng lớn.
 - Mỗi nhóm có thể giao cho một luồng công việc riêng, giảm rủi ro từ thời gian ngắn đã nêu ở điểm yếu.
 
+![h:260 Năm nhóm tính năng phát triển song song, hội tụ để tích hợp và trình diễn](assets/parallel-workstreams-vi.svg)
+
+## Bước Tiếp Theo
+
+**Nếu đề xuất này được phê duyệt:**
+
+- **Ý kiến về phạm vi.** Mỗi thành viên đưa ra lý do về phạm vi nhóm của mình — giới hạn thêm hoặc mở rộng — và nêu rõ liệu có cần phần cứng hay không.
+- **Yêu cầu và tính khả thi.** Mỗi thành viên cung cấp danh sách yêu cầu, nghiên cứu khả thi, ngăn xếp công nghệ, và năng lực cốt lõi liên quan.
+- **Ước tính.** Mỗi thành viên cung cấp ước tính thời gian và chi phí đăng ký AI hàng tháng.
+
 # Xin cảm ơn!
 
 Ứng Dụng ERM Đề Xuất Cho Nhà Máy · Denso-FPT Hackathon 2026

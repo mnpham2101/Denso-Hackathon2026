@@ -65,6 +65,16 @@ An assessment of the proposal's position, risks, and delivery plan.
 - Parallel development shortens delivery time despite the large feature count.
 - Each group can be assigned to a separate work stream, reducing the risk from the short timeline identified as a weakness.
 
+![h:260 Five feature groups developed in parallel work streams, converging for integration and demo](assets/parallel-workstreams-en.svg)
+
+## Next Steps
+
+**If this proposal is approved:**
+
+- **Scope input.** Each member provides rationale on their group's scope — further limits or expansions — and notes whether hardware is needed.
+- **Requirements and feasibility.** Each member provides a list of requirements, a feasibility study, the tech stack, and relevant core competencies.
+- **Estimation.** Each member provides a time estimate and the monthly AI subscription cost.
+
 # Thank you!
 
 Proposed Manufacturing ERM Application · Denso-FPT Hackathon 2026
