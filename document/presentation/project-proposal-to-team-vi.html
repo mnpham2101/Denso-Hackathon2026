@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</title>
+<meta name="description" content="Denso-FPT Hackathon 2026 — phạm vi dự án, mức độ phù hợp thị trường, và kế hoạch triển khai">
+<style>
+/*
+  Deck visual style — adapted from the Round1-presentation reference deck
+  (light "paper" content slides, navy full-bleed dividers, orange/green/
+  blue/teal accent palette, rounded card tables, skewed bullet markers).
+
+  Colors live in :root as CSS variables — copy this file and edit the
+  --accent-*/--navy-deep/--ink values to retheme a deck.
+*/
+:root {
+  --accent-1: #F37021; /* orange  */
+  --accent-2: #50B848; /* green   */
+  --accent-3: #034EA2; /* blue    */
+  --accent-4: #33B2C1; /* teal    */
+  --accent-navy: #19226D;
+  --navy-deep: #0E1540;
+  --ink: #080808;
+  --ink-soft: #3d3d46;
+  --paper: #f4f4f6;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #14183a; font-family: "Segoe UI", "Segoe UI Variable", "Helvetica Neue", Arial, sans-serif; }
+
+.deck { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+.slide {
+  width: 1280px; height: 720px;
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  transform-origin: center center;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+  overflow: hidden;
+}
+.slide.active { display: flex; }
+
+/* ---------- backgrounds ---------- */
+.bg-light { background: linear-gradient(135deg, #f6f6f8 0%, #ececef 55%, #e0e1e6 100%); }
+.bg-light::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720"><g fill="none" stroke-width="2"><g transform="skewX(-16)"><rect x="240" y="60" width="380" height="460" rx="70" stroke="rgba(255,255,255,0.85)"/><rect x="1010" y="210" width="400" height="470" rx="75" stroke="rgba(25,34,109,0.05)"/><rect x="520" y="400" width="330" height="380" rx="60" stroke="rgba(25,34,109,0.06)"/></g><line x1="880" y1="-40" x2="640" y2="780" stroke="rgba(255,255,255,0.9)"/><line x1="1180" y1="-40" x2="940" y2="780" stroke="rgba(25,34,109,0.05)"/></g></svg>');
+  background-size: cover;
+}
+.bg-navy { background: linear-gradient(135deg, #10173f 0%, #151d55 45%, var(--accent-navy) 100%); color: #fff; }
+.bg-navy::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720"><g fill="none" stroke-width="2"><g transform="skewX(-16)"><rect x="240" y="60" width="380" height="460" rx="70" stroke="rgba(120,180,255,0.20)"/><rect x="1010" y="210" width="400" height="470" rx="75" stroke="rgba(255,255,255,0.10)"/><rect x="520" y="400" width="330" height="380" rx="60" stroke="rgba(120,180,255,0.10)"/></g><line x1="880" y1="-40" x2="640" y2="780" stroke="rgba(120,180,255,0.30)"/><line x1="1180" y1="-40" x2="940" y2="780" stroke="rgba(120,180,255,0.16)"/></g></svg>');
+  background-size: cover;
+}
+
+/* a divider (section slide, from a top-level '#' heading) carries its
+   optional ![bg] photo as an inline background-image */
+.divider { background-size: cover; background-position: center; color: #fff; justify-content: center; padding: 0 110px; }
+.divider .sec-num { font-size: 120px; font-weight: 700; color: var(--accent-1); line-height: 1; opacity: .95; }
+.divider h1 { font-size: 56px; font-weight: 700; color: #fff; margin-top: 10px; max-width: 900px; }
+.divider .rule { width: 110px; height: 6px; background: var(--accent-1); border-radius: 3px; margin-top: 26px; }
+.divider .divider-sub { font-size: 20px; font-weight: 300; color: #dfe6ff; max-width: 760px; margin-top: 16px; line-height: 1.45; }
+.divider .accents { position: absolute; bottom: 0; left: 0; right: 0; height: 8px; display: flex; }
+.accents span { flex: 1; }
+
+/* ---------- content slide chrome ---------- */
+.content { padding: 44px 64px 58px; position: relative; }
+.content > * { position: relative; }
+.slide-head { display: flex; align-items: baseline; gap: 18px; border-bottom: 3px solid transparent; padding-bottom: 12px; margin-bottom: 18px;
+  border-image: linear-gradient(90deg, var(--accent-1) 0 90px, rgba(25,34,109,.15) 90px 100%) 1; }
+.slide-head .num { font-size: 40px; font-weight: 700; color: var(--accent-1); line-height: 1; }
+.slide-head h2 { font-size: 31px; font-weight: 700; color: var(--accent-navy); line-height: 1.15; }
+.lead { font-size: 19px; color: var(--ink-soft); margin-bottom: 16px; }
+.lead:last-of-type { margin-bottom: 0; }
+.lead strong, .lead b { color: var(--ink); }
+.content a { color: var(--accent-3); }
+.subhead { font-size: 20px; font-weight: 700; color: var(--accent-navy); margin: 4px 0 8px; }
+
+.footer { position: absolute; left: 64px; right: 64px; bottom: 18px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #8a8d99; }
+.footer .page { background: var(--accent-navy); color: #fff; border-radius: 4px; padding: 2px 10px; font-weight: 600; }
+
+ul.points, ol.points { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+ul.points:last-child, ol.points:last-child { margin-bottom: 0; }
+ul.points li, ol.points li { font-size: 18.5px; line-height: 1.42; color: var(--ink-soft); padding-left: 26px; position: relative; }
+ul.points li::before, ol.points li::before { content: ""; position: absolute; left: 0; top: 9px; width: 12px; height: 12px; background: var(--accent-1); border-radius: 3px; transform: skewX(-12deg); }
+ul.points li strong, ol.points li strong { color: var(--accent-navy); }
+ul.points li code, ol.points li code, .content code { font-family: "Consolas", "Courier New", monospace; font-size: .92em; background: rgba(25,34,109,.07); border-radius: 4px; padding: 1px 6px; }
+
+.imgbox { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 6px 0 14px; }
+.imgbox img { border-radius: 10px; box-shadow: 0 6px 22px rgba(15,20,60,.16); background: #fff; max-width: 100%; }
+.imgbox .cap { font-size: 13.5px; color: #8a8d99; font-style: italic; }
+.imgbox img.flat { box-shadow: none; background: transparent; }
+
+.cols { display: flex; gap: 34px; align-items: center; }
+
+/* TOC */
+.toc { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 26px; margin-top: 8px; }
+.toc .item { display: flex; gap: 18px; align-items: baseline; background: #fff; border-radius: 10px; padding: 18px 22px; box-shadow: 0 5px 18px rgba(15,20,60,.10); border-left: 6px solid var(--accent-1); height: 100%; }
+.toc .item:nth-child(5n+2) { border-left-color: var(--accent-2); }
+.toc .item:nth-child(5n+3) { border-left-color: var(--accent-3); }
+.toc .item:nth-child(5n+4) { border-left-color: var(--accent-4); }
+.toc .item:nth-child(5n+5) { border-left-color: var(--accent-navy); }
+.toc .n { font-size: 34px; font-weight: 700; color: var(--accent-1); min-width: 52px; }
+.toc .item:nth-child(5n+2) .n { color: var(--accent-2); }
+.toc .item:nth-child(5n+3) .n { color: var(--accent-3); }
+.toc .item:nth-child(5n+4) .n { color: var(--accent-4); }
+.toc .item:nth-child(5n+5) .n { color: var(--accent-navy); }
+.toc h3 { font-size: 21px; color: var(--accent-navy); margin-bottom: 4px; }
+.toc p { font-size: 15px; color: var(--ink-soft); line-height: 1.35; }
+
+/* cards */
+.cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 6px 0 18px; }
+.card { background: #fff; border-radius: 10px; padding: 16px 18px 14px; box-shadow: 0 5px 18px rgba(15,20,60,.10); border-top: 5px solid var(--accent-1); }
+.card.g { border-top-color: var(--accent-2); }
+.card.b { border-top-color: var(--accent-3); }
+.card h3 { font-size: 19px; color: var(--accent-navy); margin-bottom: 6px; }
+.card p { font-size: 15.5px; line-height: 1.4; color: var(--ink-soft); }
+
+/* tables */
+table.fpt { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 18px rgba(15,20,60,.10); margin-bottom: 14px; }
+table.fpt th { background: var(--accent-navy); color: #fff; text-align: left; font-size: 16px; padding: 9px 16px; }
+table.fpt td { font-size: 15.5px; line-height: 1.35; padding: 8.5px 16px; border-bottom: 1px solid #e7e8ee; color: var(--ink-soft); vertical-align: top; }
+table.fpt tr:last-child td { border-bottom: none; }
+table.fpt td strong { color: var(--accent-navy); white-space: nowrap; }
+.tag { display: inline-block; padding: 1px 9px; border-radius: 4px; color: #fff; font-size: 14px; font-weight: 600; }
+.tag.o { background: var(--accent-1); } .tag.b { background: var(--accent-3); } .tag.t { background: var(--accent-4); } .tag.g { background: var(--accent-2); } .tag.n { background: var(--accent-navy); }
+
+/* seam / callout cards */
+.seams { display: flex; flex-direction: column; gap: 13px; margin-bottom: 16px; }
+.seam { background: #fff; border-radius: 8px; border-left: 6px solid var(--accent-1); box-shadow: 0 4px 14px rgba(15,20,60,.09); padding: 12px 18px; display: flex; gap: 16px; align-items: baseline; }
+.seam.b { border-left-color: var(--accent-3); } .seam.t { border-left-color: var(--accent-4); }
+.seam .who { font-weight: 700; color: var(--accent-navy); font-size: 17.5px; white-space: nowrap; min-width: 200px; }
+.seam p { font-size: 16px; line-height: 1.4; color: var(--ink-soft); }
+.strip { background: linear-gradient(90deg, var(--accent-navy), #2a35a0); color: #dfe6ff; border-radius: 8px; padding: 12px 20px; font-size: 15.5px; line-height: 1.45; margin-bottom: 14px; }
+.strip strong { color: #fff; }
+.strip:last-child { margin-bottom: 0; }
+
+/* team roster cards (photo + name + role + detail lines) */
+.team-grid { display: flex; gap: 16px; margin: 8px 0 18px; }
+.team-card { flex: 1; background: #fff; border-radius: 16px; border: 1px solid #e3e6ef; box-shadow: 0 6px 18px rgba(14,21,64,.10); padding: 20px 12px 16px; text-align: center; }
+.team-card img { width: 116px; height: 116px; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent-1); background: #fff; margin-bottom: 10px; }
+.team-card:nth-child(5n+2) img { border-color: var(--accent-3); }
+.team-card:nth-child(5n+3) img { border-color: var(--accent-2); }
+.team-card:nth-child(5n+4) img { border-color: var(--accent-4); }
+.team-card:nth-child(5n+5) img { border-color: var(--accent-navy); }
+.team-card .name { display: block; font-size: 17px; font-weight: 700; color: var(--accent-navy); margin-bottom: 2px; }
+.team-card .role { display: block; font-size: 14px; font-weight: 600; color: var(--accent-1); margin-bottom: 6px; }
+.team-card:nth-child(5n+2) .role { color: var(--accent-3); }
+.team-card:nth-child(5n+3) .role { color: var(--accent-2); }
+.team-card:nth-child(5n+4) .role { color: var(--accent-4); }
+.team-card:nth-child(5n+5) .role { color: var(--accent-navy); }
+.team-card .detail { display: block; font-size: 13px; line-height: 1.4; color: var(--ink-soft); }
+
+/* chain visual */
+.chain { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0 22px; flex-wrap: nowrap; }
+.chain .link { background: var(--accent-navy); color: #fff; font-size: 16.5px; font-weight: 600; padding: 9px 20px; border-radius: 7px; transform: skewX(-10deg); box-shadow: 0 4px 12px rgba(15,20,60,.18); }
+.chain .link > span { display: inline-block; transform: skewX(10deg); }
+.chain .link.hot { background: var(--accent-1); }
+.chain .arr { color: var(--accent-1); font-size: 22px; font-weight: 700; }
+.chain .link small { display: block; font-size: 12px; font-weight: 400; opacity: .8; transform: skewX(10deg); }
+.chain.flat { gap: 7px; margin: 0 0 6px; }
+.chain.flat .link { transform: none; font-size: 14.5px; padding: 5px 12px; text-align: center; line-height: 1.25; }
+.chain.flat .link > span, .chain.flat .link small { transform: none; }
+.chain.flat .link small { font-size: 11px; opacity: .85; }
+.chain.flat .arr { font-size: 17px; }
+
+.badges { display: flex; gap: 10px; justify-content: center; margin: 0 0 20px; flex-wrap: wrap; }
+.badge { border: 2px solid var(--accent-1); color: #b34e0e; background: rgba(243,112,33,.07); font-size: 14.5px; font-weight: 600; padding: 5px 14px; border-radius: 999px; }
+.badge.g { border-color: var(--accent-2); color: #2c7a25; background: rgba(80,184,72,.09); }
+
+/* terminal / log evidence */
+pre.log { background: var(--navy-deep); color: #cfd6f5; font-family: "Consolas", "Courier New", monospace; font-size: 13.5px; line-height: 1.5; border-radius: 8px; padding: 14px 18px; overflow: hidden; margin-bottom: 14px; white-space: pre-wrap; }
+pre.log .ok { color: #7ee787; }
+pre.log .dim { color: #7f88ad; }
+
+/* ---------- controls ---------- */
+.hint { position: fixed; left: 18px; bottom: 12px; color: rgba(255,255,255,.45); font-size: 12.5px; z-index: 50; }
+.hud { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; align-items: center; font-family: inherit; }
+.hud button { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 12px; font-size: 15px; cursor: pointer; }
+.hud button:hover { background: var(--accent-1); border-color: var(--accent-1); }
+.hud .ctr { color: rgba(255,255,255,.75); font-size: 14px; min-width: 60px; text-align: center; }
+.progress { position: fixed; left: 0; bottom: 0; height: 4px; background: var(--accent-1); width: 0; z-index: 60; transition: width .25s ease; }
+
+@media print {
+  html, body { background: #fff; height: auto; }
+  .deck { position: static; display: block; }
+  .slide { display: flex !important; position: relative; transform: none !important; box-shadow: none; page-break-after: always; margin: 0 auto; }
+  .hud, .progress, .hint { display: none !important; }
+  @page { size: 13.55in 7.65in; margin: 0; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="deck">
+<section class="slide active divider bg-navy"><div class="sec-num">01</div><h1>Denso-FPT Hackathon 2026</h1><div class="rule"></div><p class="divider-sub">Ứng dụng quản lý nhà máy được đề xuất cho các đề bài công nghệ D1, D2, D3 của Denso-FPT Hackathon 2026.</p><div class="accents"><span style="background:var(--accent-1)"></span><span style="background:var(--accent-2)"></span><span style="background:var(--accent-3)"></span><span style="background:var(--accent-4)"></span></div></section>
+<section class="slide bg-light content"><div class="slide-head"><div class="num">01</div><h2>Giới Thiệu Dự Án</h2></div><p class="lead">Dự án đề xuất một ứng dụng web, triển khai tại chỗ (on-premise), phục vụ thu thập dữ liệu nhà máy, dự đoán, và báo cáo, xây dựng cho Denso-FPT Hackathon 2026.</p><ul class="points"><li>Hướng đến ba đề bài D1, D2, D3: kết nối thiết bị cũ, dự báo và mô phỏng logistics, dự đoán tác động chuỗi sản xuất.</li><li>Kết hợp giao diện web, nền tảng dữ liệu tại chỗ, và mô hình AI/ML hoạt động ngoại tuyến.</li><li>Nằm giữa thực tiễn ERM/ERP phổ biến và yêu cầu kỹ thuật riêng của cuộc thi.</li></ul><div class="footer"><span>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</span><span class="page">1</span></div></section>
+<section class="slide divider bg-navy"><div class="sec-num">02</div><h1>Phạm Vi Dự Án</h1><div class="rule"></div><p class="divider-sub">Các nhóm tính năng, và mức độ phù hợp của đề xuất với ERM phổ biến cũng như yêu cầu của D1–D3.</p><div class="accents"><span style="background:var(--accent-1)"></span><span style="background:var(--accent-2)"></span><span style="background:var(--accent-3)"></span><span style="background:var(--accent-4)"></span></div></section>
+<section class="slide bg-light content"><div class="slide-head"><div class="num">02</div><h2>Nhóm Tính Năng</h2></div><div class="imgbox"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTAwIDI2MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiPgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMTAwIiBoZWlnaHQ9IjI2MCIgZmlsbD0iI2ZmZmZmZiIvPgoKICA8IS0tIENhcmQgMTogVUkgKG9yYW5nZSkgLS0+CiAgPGc+CiAgICA8cmVjdCB4PSIyMCIgeT0iMjUiIHdpZHRoPSIxODAiIGhlaWdodD0iMjEwIiByeD0iMTYiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2UzZTZlZiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8cmVjdCB4PSIyMyIgeT0iMjgiIHdpZHRoPSIxNzQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiNGMzcwMjEiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExMCwxMDMpIHNjYWxlKDEuNikiIHN0cm9rZT0iI0YzNzAyMSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgogICAgICA8cmVjdCB4PSItMjgiIHk9Ii0yNCIgd2lkdGg9IjU2IiBoZWlnaHQ9IjQ0IiByeD0iNiIvPgogICAgICA8bGluZSB4MT0iLTI4IiB5MT0iLTEwIiB4Mj0iMjgiIHkyPSItMTAiLz4KICAgICAgPGNpcmNsZSBjeD0iLTIwIiBjeT0iLTE3IiByPSIyLjIiIGZpbGw9IiNGMzcwMjEiIHN0cm9rZT0ibm9uZSIvPgogICAgICA8Y2lyY2xlIGN4PSItMTIiIGN5PSItMTciIHI9IjIuMiIgZmlsbD0iI0YzNzAyMSIgc3Ryb2tlPSJub25lIi8+CiAgICAgIDxjaXJjbGUgY3g9Ii00IiBjeT0iLTE3IiByPSIyLjIiIGZpbGw9IiNGMzcwMjEiIHN0cm9rZT0ibm9uZSIvPgogICAgICA8cGF0aCBkPSJNNiA0IEwyMiAxNiBMMTYgMTcgTDIwIDI2IEwxNSAyOCBMMTEgMTkgTDYgMjQgWiIgZmlsbD0iI0YzNzAyMSIgc3Ryb2tlPSJub25lIi8+CiAgICA8L2c+CiAgICA8dGV4dCB4PSIxMTAiIHk9IjIxMyIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE5MjI2RCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R2lhbyBkaeG7h248L3RleHQ+CiAgPC9nPgoKICA8IS0tIENhcmQgMjogSW5mcmFzdHJ1Y3R1cmUgKGdyZWVuKSAtLT4KICA8Zz4KICAgIDxyZWN0IHg9IjIzNSIgeT0iMjUiIHdpZHRoPSIxODAiIGhlaWdodD0iMjEwIiByeD0iMTYiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2UzZTZlZiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8cmVjdCB4PSIyMzgiIHk9IjI4IiB3aWR0aD0iMTc0IiBoZWlnaHQ9IjgiIHJ4PSI0IiBmaWxsPSIjNTBCODQ4Ii8+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMjUsMTAzKSBzY2FsZSgxLjYpIiBzdHJva2U9IiM1MEI4NDgiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgICAgPHJlY3QgeD0iLTI2IiB5PSItMjQiIHdpZHRoPSI1MiIgaGVpZ2h0PSIxNCIgcng9IjMiLz4KICAgICAgPHJlY3QgeD0iLTI2IiB5PSItNiIgd2lkdGg9IjUyIiBoZWlnaHQ9IjE0IiByeD0iMyIvPgogICAgICA8cmVjdCB4PSItMjYiIHk9IjEyIiB3aWR0aD0iNTIiIGhlaWdodD0iMTQiIHJ4PSIzIi8+CiAgICAgIDxjaXJjbGUgY3g9Ii0xOCIgY3k9Ii0xNyIgcj0iMi40IiBmaWxsPSIjNTBCODQ4IiBzdHJva2U9Im5vbmUiLz4KICAgICAgPGNpcmNsZSBjeD0iLTE4IiBjeT0iMSIgcj0iMi40IiBmaWxsPSIjNTBCODQ4IiBzdHJva2U9Im5vbmUiLz4KICAgICAgPGNpcmNsZSBjeD0iLTE4IiBjeT0iMTkiIHI9IjIuNCIgZmlsbD0iIzUwQjg0OCIgc3Ryb2tlPSJub25lIi8+CiAgICA8L2c+CiAgICA8dGV4dCB4PSIzMjUiIHk9IjIxMyIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE5MjI2RCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SOG6oSB04bqnbmc8L3RleHQ+CiAgPC9nPgoKICA8IS0tIENhcmQgMzogQnVzaW5lc3MgTG9naWMgKGJsdWUpIC0tPgogIDxnPgogICAgPHJlY3QgeD0iNDUwIiB5PSIyNSIgd2lkdGg9IjE4MCIgaGVpZ2h0PSIyMTAiIHJ4PSIxNiIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZTNlNmVmIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIDxyZWN0IHg9IjQ1MyIgeT0iMjgiIHdpZHRoPSIxNzQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMwMzRFQTIiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDU0MCwxMDMpIHNjYWxlKDEuNikiIHN0cm9rZT0iIzAzNEVBMiIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiPgogICAgICA8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMTYiLz4KICAgICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjUiLz4KICAgICAgPGxpbmUgeDE9IjAiIHkxPSItMjQiIHgyPSIwIiB5Mj0iLTE2Ii8+CiAgICAgIDxsaW5lIHgxPSIwIiB5MT0iMTYiIHgyPSIwIiB5Mj0iMjQiLz4KICAgICAgPGxpbmUgeDE9Ii0yNCIgeTE9IjAiIHgyPSItMTYiIHkyPSIwIi8+CiAgICAgIDxsaW5lIHgxPSIxNiIgeTE9IjAiIHgyPSIyNCIgeTI9IjAiLz4KICAgICAgPGxpbmUgeDE9Ii0xNyIgeTE9Ii0xNyIgeDI9Ii0xMS4zIiB5Mj0iLTExLjMiLz4KICAgICAgPGxpbmUgeDE9IjExLjMiIHkxPSIxMS4zIiB4Mj0iMTciIHkyPSIxNyIvPgogICAgICA8bGluZSB4MT0iLTE3IiB5MT0iMTciIHgyPSItMTEuMyIgeTI9IjExLjMiLz4KICAgICAgPGxpbmUgeDE9IjExLjMiIHkxPSItMTEuMyIgeDI9IjE3IiB5Mj0iLTE3Ii8+CiAgICA8L2c+CiAgICA8dGV4dCB4PSI1NDAiIHk9IjIxMyIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE5MjI2RCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TmdoaeG7h3AgduG7pTwvdGV4dD4KICA8L2c+CgogIDwhLS0gQ2FyZCA0OiBTZWN1cml0eSAodGVhbCkgLS0+CiAgPGc+CiAgICA8cmVjdCB4PSI2NjUiIHk9IjI1IiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjIxMCIgcng9IjE2IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlM2U2ZWYiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHJlY3QgeD0iNjY4IiB5PSIyOCIgd2lkdGg9IjE3NCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzMzQjJDMSIvPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzU1LDEwMykgc2NhbGUoMS42KSIgc3Ryb2tlPSIjMzNCMkMxIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgICAgIDxwYXRoIGQ9Ik0wLC0yNiBMMjIsLTE2IEwyMiw0IEMyMiwyMCAxMCwyOCAwLDMyIEMtMTAsMjggLTIyLDIwIC0yMiw0IEwtMjIsLTE2IFoiLz4KICAgICAgPHBhdGggZD0iTS0xMCwyIEwtMiwxMCBMMTQsLTgiLz4KICAgIDwvZz4KICAgIDx0ZXh0IHg9Ijc1NSIgeT0iMjEzIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMTkyMjZEIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5C4bqjbyBt4bqtdDwvdGV4dD4KICA8L2c+CgogIDwhLS0gQ2FyZCA1OiBBSSAobmF2eSkgLS0+CiAgPGc+CiAgICA8cmVjdCB4PSI4ODAiIHk9IjI1IiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjIxMCIgcng9IjE2IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlM2U2ZWYiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHJlY3QgeD0iODgzIiB5PSIyOCIgd2lkdGg9IjE3NCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzE5MjI2RCIvPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTcwLDEwMykgc2NhbGUoMS42KSIgc3Ryb2tlPSIjMTkyMjZEIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICAgIDxyZWN0IHg9Ii0yMCIgeT0iLTIwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSI2IiBzdHJva2Utd2lkdGg9IjQiLz4KICAgICAgPGxpbmUgeDE9Ii0yOCIgeTE9Ii0xMiIgeDI9Ii0yMCIgeTI9Ii0xMiIvPgogICAgICA8bGluZSB4MT0iLTI4IiB5MT0iMCIgeDI9Ii0yMCIgeTI9IjAiLz4KICAgICAgPGxpbmUgeDE9Ii0yOCIgeTE9IjEyIiB4Mj0iLTIwIiB5Mj0iMTIiLz4KICAgICAgPGxpbmUgeDE9IjI4IiB5MT0iLTEyIiB4Mj0iMjAiIHkyPSItMTIiLz4KICAgICAgPGxpbmUgeDE9IjI4IiB5MT0iMCIgeDI9IjIwIiB5Mj0iMCIvPgogICAgICA8bGluZSB4MT0iMjgiIHkxPSIxMiIgeDI9IjIwIiB5Mj0iMTIiLz4KICAgICAgPGxpbmUgeDE9Ii0xMiIgeTE9Ii0yOCIgeDI9Ii0xMiIgeTI9Ii0yMCIvPgogICAgICA8bGluZSB4MT0iMTIiIHkxPSItMjgiIHgyPSIxMiIgeTI9Ii0yMCIvPgogICAgICA8bGluZSB4MT0iLTEyIiB5MT0iMjgiIHgyPSItMTIiIHkyPSIyMCIvPgogICAgICA8bGluZSB4MT0iMTIiIHkxPSIyOCIgeDI9IjEyIiB5Mj0iMjAiLz4KICAgICAgPGNpcmNsZSBjeD0iLTciIGN5PSItNiIgcj0iMyIgZmlsbD0iIzE5MjI2RCIgc3Ryb2tlPSJub25lIi8+CiAgICAgIDxjaXJjbGUgY3g9IjciIGN5PSItMiIgcj0iMyIgZmlsbD0iIzE5MjI2RCIgc3Ryb2tlPSJub25lIi8+CiAgICAgIDxjaXJjbGUgY3g9Ii0zIiBjeT0iOCIgcj0iMyIgZmlsbD0iIzE5MjI2RCIgc3Ryb2tlPSJub25lIi8+CiAgICAgIDxsaW5lIHgxPSItNyIgeTE9Ii02IiB4Mj0iNyIgeTI9Ii0yIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgICAgPGxpbmUgeDE9IjciIHkxPSItMiIgeDI9Ii0zIiB5Mj0iOCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICAgIDxsaW5lIHgxPSItMyIgeTE9IjgiIHgyPSItNyIgeTI9Ii02IiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIDwvZz4KICAgIDx0ZXh0IHg9Ijk3MCIgeT0iMjEzIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMTkyMjZEIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BSTwvdGV4dD4KICA8L2c+Cjwvc3ZnPgo=" alt=""></div><div class="footer"><span>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</span><span class="page">2</span></div></section>
+<section class="slide bg-light content"><div class="slide-head"><div class="num">02</div><h2>Mức Độ Phù Hợp Với Thị Trường ERM</h2></div><ul class="points"><li><strong>Tính năng phổ biến.</strong> Truy cập web, bảng điều khiển trực tiếp, nhập liệu thủ công, triển khai tại chỗ, lưu trữ cục bộ, báo cáo, và dự đoán đã có sẵn ở các sản phẩm ERM phổ biến.</li><li><strong>Giá trị gia tăng.</strong> Xây dựng quy trình kéo-thả, cấu hình không cần lập trình, kết nối máy móc, thu thập đa nguồn, và AI đa mô hình vượt ra ngoài mức nền tảng ERM thông thường.</li><li><strong>Năng lực mới.</strong> Vận hành ngoại tuyến và suy luận AI ngoại tuyến chưa được ghi nhận ở các sản phẩm ERM khảo sát — có thể là điểm khác biệt.</li></ul><div class="imgbox"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgMjEwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiI+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjY0MCIgaGVpZ2h0PSIyMTAiIGZpbGw9IiNmZmZmZmYiLz4KICA8dGV4dCB4PSIyMCIgeT0iMjQiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWYyOTM3Ij5Db21tb24gRVJNIFNjb3BlIOKAlCBGZWF0dXJlIEJyZWFrZG93biAobiA9IDIyKTwvdGV4dD4KICA8Zz4KICAgIDxyZWN0IHg9IjIwIiB5PSI0MCIgd2lkdGg9IjIxNiIgaGVpZ2h0PSI0NiIgZmlsbD0iIzJFN0Q2MyIvPgogICAgPHJlY3QgeD0iMjM2IiB5PSI0MCIgd2lkdGg9IjI0NiIgaGVpZ2h0PSI0NiIgZmlsbD0iI0M5OEEyQiIvPgogICAgPHJlY3QgeD0iNDgyIiB5PSI0MCIgd2lkdGg9IjEzOCIgaGVpZ2h0PSI0NiIgZmlsbD0iIzZCNzI4MCIvPgogICAgPHRleHQgeD0iMTI4IiB5PSI2OCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPjggKDM2JSk8L3RleHQ+CiAgICA8dGV4dCB4PSIzNTkiIHk9IjY4IiBmb250LXNpemU9IjE0IiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+OSAoNDElKTwvdGV4dD4KICAgIDx0ZXh0IHg9IjU1MSIgeT0iNjgiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj41ICgyMyUpPC90ZXh0PgogIDwvZz4KICA8ZyBmb250LXNpemU9IjEzIiBmaWxsPSIjMWYyOTM3Ij4KICAgIDxyZWN0IHg9IjIwIiB5PSIxMTAiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgZmlsbD0iIzJFN0Q2MyIvPgogICAgPHRleHQgeD0iNDAiIHk9IjEyMSI+WWVzIOKAlCBjb21tb24gZmVhdHVyZSwgYWxyZWFkeSBzdGFuZGFyZCBpbiBzdXJ2ZXllZCBFUk0gcHJvZHVjdHM8L3RleHQ+CiAgICA8cmVjdCB4PSIyMCIgeT0iMTM2IiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIGZpbGw9IiNDOThBMkIiLz4KICAgIDx0ZXh0IHg9IjQwIiB5PSIxNDciPlBhcnRpYWwg4oCUIGFkZGVkIHZhbHVlLCBleHRlbmRzIGJleW9uZCBhIHR5cGljYWwgRVJNIGJhc2VsaW5lPC90ZXh0PgogICAgPHJlY3QgeD0iMjAiIHk9IjE2MiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSIjNkI3MjgwIi8+CiAgICA8dGV4dCB4PSI0MCIgeT0iMTczIj5ObyDigJQgbmV3IGZlYXR1cmUsIG5vdCBkb2N1bWVudGVkIGluIGFueSBzdXJ2ZXllZCBFUk0gcHJvZHVjdDwvdGV4dD4KICA8L2c+Cjwvc3ZnPgo=" style="height:220px" alt="Phân bố tính năng so với phạm vi ERM phổ biến — Có 8, Một phần 9, Không 5 (n = 22)"><div class="cap">Phân bố tính năng so với phạm vi ERM phổ biến — Có 8, Một phần 9, Không 5 (n = 22)</div></div><div class="footer"><span>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</span><span class="page">3</span></div></section>
+<section class="slide bg-light content"><div class="slide-head"><div class="num">02</div><h2>Mức Độ Phù Hợp Với D1, D2, D3</h2></div><ul class="points"><li><strong>Điểm mạnh.</strong> Bảng điều khiển trực tiếp, kết nối máy móc, thu thập đa nguồn, báo cáo, và dự đoán khớp trực tiếp với các hạng mục bàn giao của D1–D3.</li><li><strong>Rủi ro ngoài phạm vi.</strong> Cấu hình không cần lập trình, hỗ trợ đa định dạng, lưu trữ cục bộ, chuẩn hóa dữ liệu, và AI đa mô hình chỉ hỗ trợ gián tiếp; cần xác minh mức độ đáp ứng thực tế.</li><li><strong>Không được yêu cầu.</strong> Kiểu giao diện, vị trí triển khai, vận hành ngoại tuyến, lựa chọn mô hình, và toàn bộ tính năng bảo mật không được D1/D2/D3 yêu cầu; ban giám khảo có thể xem đây là phạm vi không cần thiết.</li></ul><div class="imgbox"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgMjEwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiI+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjY0MCIgaGVpZ2h0PSIyMTAiIGZpbGw9IiNmZmZmZmYiLz4KICA8dGV4dCB4PSIyMCIgeT0iMjQiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWYyOTM3Ij5EMS9EMi9EMyBSZXF1aXJlbWVudHMg4oCUIE92ZXJhbGwgVmVyZGljdCBCcmVha2Rvd24gKG4gPSAyMik8L3RleHQ+CiAgPGc+CiAgICA8cmVjdCB4PSIyMCIgeT0iNDAiIHdpZHRoPSIxNjIiIGhlaWdodD0iNDYiIGZpbGw9IiMyRTdENjMiLz4KICAgIDxyZWN0IHg9IjE4MiIgeT0iNDAiIHdpZHRoPSIxMzgiIGhlaWdodD0iNDYiIGZpbGw9IiNDOThBMkIiLz4KICAgIDxyZWN0IHg9IjMyMCIgeT0iNDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iNDYiIGZpbGw9IiM2QjcyODAiLz4KICAgIDx0ZXh0IHg9IjEwMSIgeT0iNjgiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj42ICgyNyUpPC90ZXh0PgogICAgPHRleHQgeD0iMjUxIiB5PSI2OCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPjUgKDIzJSk8L3RleHQ+CiAgICA8dGV4dCB4PSI0NzAiIHk9IjY4IiBmb250LXNpemU9IjE0IiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+MTEgKDUwJSk8L3RleHQ+CiAgPC9nPgogIDxnIGZvbnQtc2l6ZT0iMTMiIGZpbGw9IiMxZjI5MzciPgogICAgPHJlY3QgeD0iMjAiIHk9IjExMCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSIjMkU3RDYzIi8+CiAgICA8dGV4dCB4PSI0MCIgeT0iMTIxIj5ZZXMg4oCUIHN0cmVuZ3RoLCBtYXRjaGVzIGEgY29yZSBEMS9EMi9EMyBkZWxpdmVyYWJsZSBkaXJlY3RseTwvdGV4dD4KICAgIDxyZWN0IHg9IjIwIiB5PSIxMzYiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgZmlsbD0iI0M5OEEyQiIvPgogICAgPHRleHQgeD0iNDAiIHk9IjE0NyI+UGFydGlhbCDigJQgb3V0LW9mLXNjb3BlIHJpc2ssIHN1cHBvcnRzIGEgZGVsaXZlcmFibGUgb25seSBpbmRpcmVjdGx5PC90ZXh0PgogICAgPHJlY3QgeD0iMjAiIHk9IjE2MiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSIjNkI3MjgwIi8+CiAgICA8dGV4dCB4PSI0MCIgeT0iMTczIj5ObyDigJQgbm90IHJlcXVlc3RlZDsgcG9zc2libGUgcHVzaGJhY2sgZnJvbSBldmFsdWF0b3JzL2N1c3RvbWVyczwvdGV4dD4KICA8L2c+Cjwvc3ZnPgo=" style="height:220px" alt="Phân bố tính năng so với yêu cầu D1/D2/D3 — Có 6, Một phần 5, Không 11 (n = 22)"><div class="cap">Phân bố tính năng so với yêu cầu D1/D2/D3 — Có 6, Một phần 5, Không 11 (n = 22)</div></div><div class="footer"><span>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</span><span class="page">4</span></div></section>
+<section class="slide divider bg-navy"><div class="sec-num">03</div><h1>Điểm Mạnh, Điểm Yếu, Và Tính Khả Thi</h1><div class="rule"></div><p class="divider-sub">Đánh giá vị thế, rủi ro, và kế hoạch triển khai của đề xuất.</p><div class="accents"><span style="background:var(--accent-1)"></span><span style="background:var(--accent-2)"></span><span style="background:var(--accent-3)"></span><span style="background:var(--accent-4)"></span></div></section>
+<section class="slide bg-light content"><div class="slide-head"><div class="num">03</div><h2>Điểm Mạnh</h2></div><ul class="points"><li>Hoạt động như Jira cho phát triển phần mềm, hoặc như ERM cho sản xuất, được áp dụng như một công cụ vận hành thực tế cho nhà máy.</li><li>Thích ứng với nhiều quy trình làm việc, thủ tục, và loại dữ liệu khác nhau, thay vì một quy trình cố định duy nhất.</li><li>Cung cấp các tính năng chưa có ở các sản phẩm ERM phổ biến, dựa trên kết quả nghiên cứu thị trường.</li><li>Có thể tùy chỉnh theo từng nhà máy và từng yêu cầu khác nhau.</li><li>Máy chủ tại chỗ, AI triển khai on-premise, và hệ thống bảo mật giúp bảo vệ thông tin sản xuất độc quyền.</li></ul><div class="footer"><span>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</span><span class="page">5</span></div></section>
+<section class="slide bg-light content"><div class="slide-head"><div class="num">03</div><h2>Điểm Yếu Và Giải Pháp</h2></div><ul class="points"><li><strong>Khối lượng công việc lớn, thời gian ngắn.</strong> Nhiều tính năng thuộc năm nhóm cần được xây dựng nhanh chóng. <em>Giải pháp:</em> sản xuất song song theo từng nhóm tính năng, trình bày ở phần tiếp theo.</li><li><strong>Tính năng không được yêu cầu có thể bị từ chối.</strong> Các năng lực vượt ngoài D1/D2/D3 có thể không được ban giám khảo hoặc khách hàng đánh giá cao.</li><li><strong>Rủi ro bị sao chép.</strong> Một tập đoàn hoặc đội nhóm lớn hơn có thể tái tạo lại ứng dụng sau khi ý tưởng đã được chứng minh.</li></ul><div class="footer"><span>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</span><span class="page">6</span></div></section>
+<section class="slide bg-light content"><div class="slide-head"><div class="num">03</div><h2>Tính Khả Thi</h2></div><ul class="points"><li>Năm nhóm tính năng — Giao diện, Hạ tầng, Nghiệp vụ, Bảo mật, AI — đủ tách biệt để phát triển song song.</li><li>Phát triển song song rút ngắn thời gian bàn giao dù số lượng tính năng lớn.</li><li>Mỗi nhóm có thể giao cho một luồng công việc riêng, giảm rủi ro từ thời gian ngắn đã nêu ở điểm yếu.</li></ul><div class="footer"><span>Ứng Dụng ERM Đề Xuất Cho Nhà Máy</span><span class="page">7</span></div></section>
+<section class="slide divider bg-navy"><div class="sec-num">04</div><h1>Xin cảm ơn!</h1><div class="rule"></div><p class="divider-sub">Ứng Dụng ERM Đề Xuất Cho Nhà Máy · Denso-FPT Hackathon 2026</p><div class="accents"><span style="background:var(--accent-1)"></span><span style="background:var(--accent-2)"></span><span style="background:var(--accent-3)"></span><span style="background:var(--accent-4)"></span></div></section>
+</div>
+
+<div class="hint">&larr; &rarr; navigate &middot; F fullscreen &middot; print for PDF</div>
+<div class="hud">
+  <button id="prev" aria-label="Previous slide">&lsaquo;</button>
+  <span class="ctr" id="ctr"></span>
+  <button id="next" aria-label="Next slide">&rsaquo;</button>
+</div>
+<div class="progress" id="prog"></div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+let cur = 0;
+
+function fit() {
+  const s = Math.min(innerWidth / 1280, innerHeight / 720);
+  slides.forEach(sl => sl.style.transform = `scale(${s})`);
+}
+function show(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((sl, k) => sl.classList.toggle('active', k === cur));
+  document.getElementById('ctr').textContent = `${cur + 1} / ${slides.length}`;
+  document.getElementById('prog').style.width = `${(cur + 1) / slides.length * 100}%`;
+  location.hash = cur ? `#${cur + 1}` : '';
+}
+addEventListener('resize', fit);
+addEventListener('keydown', e => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+  else if (e.key === 'Home') show(0);
+  else if (e.key === 'End') show(slides.length - 1);
+  else if (e.key.toLowerCase() === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+});
+document.getElementById('prev').onclick = () => show(cur - 1);
+document.getElementById('next').onclick = () => show(cur + 1);
+let tx = null;
+addEventListener('touchstart', e => tx = e.touches[0].clientX);
+addEventListener('touchend', e => { if (tx !== null) { const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1)); tx = null; } });
+
+const h = parseInt((location.hash || '').slice(1), 10);
+fit(); show(isNaN(h) ? 0 : h - 1);
+</script>
+
+</body>
+</html>
