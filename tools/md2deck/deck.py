@@ -31,6 +31,14 @@ from pathlib import Path
 
 from . import helpers
 
+# Bundled default divider background: used on every section (`#`) slide that
+# doesn't specify its own `![bg](path)` photo, so a deck gets the FPT-brand
+# look for free. An absolute path resolves correctly through
+# helpers.resolve_image_src() regardless of the markdown source's own
+# base_dir (Path's `/` operator on an absolute right-hand side returns it
+# unchanged).
+DEFAULT_DIVIDER_BG = Path(__file__).parent / "assets" / "bg-fpt-tower.jpg"
+
 # ---------------------------------------------------------------------------
 # Front matter + heading-driven structure splitting
 # ---------------------------------------------------------------------------
@@ -301,23 +309,53 @@ def _accents_html() -> str:
     )
 
 
-def render_divider_subtitle(leading_blocks: list[dict]) -> str:
-    """Render a section's pre-`##` paragraphs as light-on-dark subtitle
-    text under its divider title. Other block types found before the
-    first `##` (lists, tables, images) are ignored — dividers stay clean
-    full-bleed slides, not content slides.
+_RE_EYEBROW_PARAGRAPH = re.compile(r"^\*\*(.+)\*\*$")
+
+
+def render_divider_lead(leading_blocks: list[dict]) -> tuple[str, str]:
+    """Split a section's pre-`##` paragraphs into an optional eyebrow — a
+    lone **bold-only** paragraph, rendered as a small tracked label above
+    the title — and the remaining subtitle paragraphs, rendered below the
+    title's rule. Other block types found before the first `##` (lists,
+    tables, images) are ignored — dividers stay clean full-bleed slides,
+    not content slides.
     """
-    return "".join(f'<p class="divider-sub">{helpers.render_inline(b["text"])}</p>' for b in leading_blocks if b["type"] == "paragraph")
+    paragraphs = [b for b in leading_blocks if b["type"] == "paragraph"]
+    eyebrow_html = ""
+    if paragraphs:
+        match = _RE_EYEBROW_PARAGRAPH.match(paragraphs[0]["text"].strip())
+        if match:
+            eyebrow_html = f'<div class="eyebrow">{helpers.render_inline(match.group(1))}</div>'
+            paragraphs = paragraphs[1:]
+    subtitle_html = "".join(f'<p class="divider-sub">{helpers.render_inline(b["text"])}</p>' for b in paragraphs)
+    return eyebrow_html, subtitle_html
 
 
-def render_divider_slide(section_num: str, title_html: str, subtitle_html: str, bg_src: str | None, base_dir: Path) -> str:
-    if bg_src:
-        bg = helpers.resolve_image_src(bg_src, base_dir)
-        open_tag = f'<section class="slide divider" style="background-image: linear-gradient(rgba(16,23,63,.85), rgba(16,23,63,.90)), url(\'{bg}\')">'
+def render_divider_slide(
+    section_num: str,
+    title_html: str,
+    eyebrow_html: str,
+    subtitle_html: str,
+    bg_src: str | None,
+    base_dir: Path,
+    use_default_photo: bool,
+) -> str:
+    # The bundled default photo is reserved for the cover and closing
+    # sections (use_default_photo), or any section with an explicit
+    # `![bg]`, to keep the deck's file size down. Every other section
+    # renders as `.divider-light`: no photo, orange/navy title colors
+    # matching a content slide's `.slide-head` instead of white-on-photo.
+    photo_src = bg_src or (str(DEFAULT_DIVIDER_BG) if use_default_photo else None)
+    if photo_src:
+        bg = helpers.resolve_image_src(photo_src, base_dir)
+        open_tag = (
+            '<section class="slide divider divider-photo" '
+            f'style="background-image: linear-gradient(rgba(16,23,63,.45), rgba(16,23,63,.65)), url(\'{bg}\')">'
+        )
     else:
-        open_tag = '<section class="slide divider bg-navy">'  # no photo: plain navy gradient
+        open_tag = '<section class="slide divider divider-light">'
     return (
-        f'{open_tag}<div class="sec-num">{section_num}</div><h1>{title_html}</h1>'
+        f'{open_tag}<div class="sec-num">{section_num}</div>{eyebrow_html}<h1>{title_html}</h1>'
         f'<div class="rule"></div>{subtitle_html}{_accents_html()}</section>'
     )
 
@@ -504,15 +542,29 @@ def convert_markdown_to_html(md_text: str, base_dir: Path, style_css: str) -> st
     deck_title = meta.get("title", "")
     body = strip_comments(body)
 
+    sections = split_into_sections(body)
+    total_sections = len(sections)
+
     section_htmls = []
     page_number = 0
-    for section_index, (heading_text, section_body) in enumerate(split_into_sections(body), start=1):
+    for section_index, (heading_text, section_body) in enumerate(sections, start=1):
         section_num = f"{section_index:02d}"
         leading_text, slide_texts = split_section_into_slides(section_body)
 
         bg_src, leading_text = extract_bg_directive(leading_text)
-        subtitle_html = render_divider_subtitle(parse_blocks(leading_text))
-        section_htmls.append(render_divider_slide(section_num, helpers.render_inline(heading_text), subtitle_html, bg_src, base_dir))
+        eyebrow_html, subtitle_html = render_divider_lead(parse_blocks(leading_text))
+        is_cover_or_closing = section_index == 1 or section_index == total_sections
+        section_htmls.append(
+            render_divider_slide(
+                section_num,
+                helpers.render_inline(heading_text),
+                eyebrow_html,
+                subtitle_html,
+                bg_src,
+                base_dir,
+                is_cover_or_closing,
+            )
+        )
 
         for slide_heading, slide_body in slide_texts:
             _, slide_body = extract_bg_directive(slide_body)  # content slides don't use a background photo

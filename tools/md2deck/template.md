@@ -5,9 +5,14 @@ description: One-line description shown in the HTML <meta> tag
 
 # Your Deck Title
 
-A short subtitle/scope statement can go here — any paragraph placed right
-after a `#` heading and before the first `##` is shown as light text under
-the section title (nothing needed for a title/cover slide beyond this).
+**A short tracked eyebrow label, if this lone line is the only thing in
+its paragraph and fully wrapped in `**bold**`** — rendered above the
+title in small caps.
+
+A regular subtitle/scope statement can go here — any other paragraph
+placed before the first `##` is shown under the title's rule, in a style
+distinct from both the eyebrow and the title (nothing needed for a
+title/cover slide beyond this).
 
 ## Table of contents
 
@@ -33,8 +38,13 @@ the section title (nothing needed for a title/cover slide beyond this).
 
 ![bg](assets/section-bg.png)
 
-Every `#` section can carry its own optional full-bleed photo — just add
-a `![bg](path)` line anywhere before the first `##`.
+Every `#` section renders as a full-bleed divider, in one of two looks:
+add a `![bg](path)` line anywhere before the first `##` to use your own
+photo for that one section (white title, dark overlay for contrast); leave
+it out and only the deck's first and last sections (cover and closing)
+fall back to the tool's bundled default photo. Every other section instead
+renders on a plain light background with the same orange-number/navy-title
+colors as a content slide's title — no photo to re-embed on every divider.
 
 ## Project goals — one short sentence per slide title
 

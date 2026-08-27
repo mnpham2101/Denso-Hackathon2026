@@ -5,6 +5,8 @@ description: Denso-FPT Hackathon 2026 — phạm vi dự án, mức độ phù h
 
 # Denso-FPT Hackathon 2026
 
+**Đề Xuất Dự Án**
+
 Ứng dụng quản lý nhà máy được đề xuất cho các đề bài công nghệ D1, D2, D3 của Denso-FPT Hackathon 2026.
 
 ## Giới Thiệu Dự Án

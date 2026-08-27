@@ -42,22 +42,33 @@ html, body { height: 100%; background: #14183a; font-family: "Segoe UI", "Segoe 
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720"><g fill="none" stroke-width="2"><g transform="skewX(-16)"><rect x="240" y="60" width="380" height="460" rx="70" stroke="rgba(255,255,255,0.85)"/><rect x="1010" y="210" width="400" height="470" rx="75" stroke="rgba(25,34,109,0.05)"/><rect x="520" y="400" width="330" height="380" rx="60" stroke="rgba(25,34,109,0.06)"/></g><line x1="880" y1="-40" x2="640" y2="780" stroke="rgba(255,255,255,0.9)"/><line x1="1180" y1="-40" x2="940" y2="780" stroke="rgba(25,34,109,0.05)"/></g></svg>');
   background-size: cover;
 }
-.bg-navy { background: linear-gradient(135deg, #10173f 0%, #151d55 45%, var(--accent-navy) 100%); color: #fff; }
-.bg-navy::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720"><g fill="none" stroke-width="2"><g transform="skewX(-16)"><rect x="240" y="60" width="380" height="460" rx="70" stroke="rgba(120,180,255,0.20)"/><rect x="1010" y="210" width="400" height="470" rx="75" stroke="rgba(255,255,255,0.10)"/><rect x="520" y="400" width="330" height="380" rx="60" stroke="rgba(120,180,255,0.10)"/></g><line x1="880" y1="-40" x2="640" y2="780" stroke="rgba(120,180,255,0.30)"/><line x1="1180" y1="-40" x2="940" y2="780" stroke="rgba(120,180,255,0.16)"/></g></svg>');
-  background-size: cover;
-}
-
-/* a divider (section slide, from a top-level '#' heading) carries its
-   optional ![bg] photo as an inline background-image */
-.divider { background-size: cover; background-position: center; color: #fff; justify-content: center; padding: 0 110px; }
+/* a divider (section slide, from a top-level '#' heading) is either a
+   `.divider-photo` (an explicit ![bg], or the deck's first/last section
+   defaulting to the bundled photo) with white text over a dark overlay, or
+   a `.divider-light` (every other section, no photo to keep file size down)
+   with the same orange/navy palette as a content slide's title — the look
+   requested to match the reference deck's title styling. */
+.divider { background-size: cover; background-position: center; justify-content: center; padding: 0 110px; }
 .divider .sec-num { font-size: 120px; font-weight: 700; color: var(--accent-1); line-height: 1; opacity: .95; }
-.divider h1 { font-size: 56px; font-weight: 700; color: #fff; margin-top: 10px; max-width: 900px; }
+.divider .eyebrow { font-size: 15px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--accent-1); margin-top: 18px; }
+.divider h1 { font-size: 56px; font-weight: 700; margin-top: 10px; max-width: 900px; }
 .divider .rule { width: 110px; height: 6px; background: var(--accent-1); border-radius: 3px; margin-top: 26px; }
-.divider .divider-sub { font-size: 20px; font-weight: 300; color: #dfe6ff; max-width: 760px; margin-top: 16px; line-height: 1.45; }
+.divider .divider-sub { font-size: 20px; max-width: 760px; margin-top: 16px; line-height: 1.45; }
 .divider .accents { position: absolute; bottom: 0; left: 0; right: 0; height: 8px; display: flex; }
 .accents span { flex: 1; }
+
+.divider-photo { color: #fff; }
+.divider-photo h1 { color: #fff; }
+.divider-photo .divider-sub { font-weight: 300; font-style: italic; color: #c3cdef; }
+
+.divider-light { background: linear-gradient(135deg, #f6f6f8 0%, #ececef 55%, #e0e1e6 100%); color: var(--ink); }
+.divider-light::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720"><g fill="none" stroke-width="2"><g transform="skewX(-16)"><rect x="240" y="60" width="380" height="460" rx="70" stroke="rgba(255,255,255,0.85)"/><rect x="1010" y="210" width="400" height="470" rx="75" stroke="rgba(25,34,109,0.05)"/><rect x="520" y="400" width="330" height="380" rx="60" stroke="rgba(25,34,109,0.06)"/></g><line x1="880" y1="-40" x2="640" y2="780" stroke="rgba(255,255,255,0.9)"/><line x1="1180" y1="-40" x2="940" y2="780" stroke="rgba(25,34,109,0.05)"/></g></svg>');
+  background-size: cover;
+}
+.divider-light h1 { color: var(--accent-navy); }
+.divider-light .divider-sub { font-weight: 400; color: var(--ink-soft); }
 
 /* ---------- content slide chrome ---------- */
 .content { padding: 44px 64px 58px; position: relative; }

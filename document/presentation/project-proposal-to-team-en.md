@@ -5,6 +5,8 @@ description: Denso-FPT Hackathon 2026 — project scope, market alignment, and d
 
 # Denso-FPT Hackathon 2026
 
+**Project Proposal**
+
 A proposed factory-management application for the D1, D2, and D3 technology challenges of Denso-FPT Hackathon 2026.
 
 ## About the Project

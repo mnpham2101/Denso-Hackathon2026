@@ -54,3 +54,31 @@ are still supported on sections. Dedicated "cover"/"thank you" slide kinds
 dropped since that signal no longer exists — a plain `# Title` section now
 serves as both; TOC and team-roster-table detection (by heading text /
 table shape) were kept as-is.
+
+## Follow-up request (2026-08-27)
+
+> change the tools such that it uses FPT building photo as background, and
+> white color for slide title like in the
+> C:\Users\MinhP\Documents\Work\FPT-Hackathon2026\Round1-presentation
+
+That reference deck's `bg-fpt-tower.jpg` (used on its closing "Thank you!"
+lead slide) is now bundled into this tool as
+`tools/md2deck/assets/bg-fpt-tower.jpg`. Divider titles were already
+rendered in white (`.divider h1 { color: #fff; }`) over a dark overlay for
+contrast; that carries over unchanged onto the photo background.
+
+> the background photo looks so dim! The photo could be used in section
+> slide, the front page, the thank you page only to save memory. for the
+> slides that have texts, image, any content, we don't need the photo
+
+Two corrections followed, both folded into this same change: (1) the
+overlay was too opaque (`rgba(...,.85)` to `rgba(...,.90)`), hiding the
+photo almost entirely — lightened to `rgba(...,.45)` to `rgba(...,.65)` so
+the photo actually reads; (2) embedding the same ~107KB photo as base64 on
+every `#` section divider bloated the self-contained HTML for no visual
+benefit on interior dividers, so the bundled photo is now used only on the
+deck's first and last sections (cover and closing) — every other section
+divider (which, like content slides, is expected to carry real subtitle
+text) falls back to a plain navy gradient (`.bg-navy`, restored) instead of
+re-embedding the photo. An explicit `![bg](path)` on any section still
+always wins, regardless of position.
