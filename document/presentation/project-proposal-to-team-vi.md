@@ -25,6 +25,10 @@ Các nhóm tính năng, và mức độ phù hợp của đề xuất với ERM 
 
 ![](assets/feature-groups-vi.svg)
 
+## Triển Khai Tính Năng
+
+![h:520 Gateway được bảo mật tổng hợp dữ liệu sàn nhà máy và phân phối đến báo cáo, nghiệp vụ, AI, và đám mây/tại chỗ](assets/gateway-architecture-vi.svg)
+
 ## Mức Độ Phù Hợp Với Thị Trường ERM
 
 - **Tính năng phổ biến.** Truy cập web, bảng điều khiển trực tiếp, nhập liệu thủ công, triển khai tại chỗ, lưu trữ cục bộ, báo cáo, và dự đoán đã có sẵn ở các sản phẩm ERM phổ biến.

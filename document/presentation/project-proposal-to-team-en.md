@@ -25,6 +25,10 @@ Feature groups, and how the proposal aligns with common ERM practice and the D1â
 
 ![](assets/feature-groups-en.svg)
 
+## Feature Deployment
+
+![h:520 A secured Gateway aggregates floor data and distributes it to reporting, business logic, AI, and cloud/on-premises systems](assets/gateway-architecture-en.svg)
+
 ## Market Research Alignment
 
 - **Common feature.** Web access, live dashboard, manual entry, on-premise deployment, local storage, reporting, and prediction already exist in common ERM products.
